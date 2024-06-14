@@ -11,19 +11,30 @@ ENV PYTHONBUFFERED 1
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./app /app
 
-# Utwórz użytkownika django-user
-RUN adduser --disabled-password --no-create-home --home /app django-user
-
 # Przełącz się do katalogu aplikacji
 WORKDIR /app
 
-RUN python -m venv /py && \
+# Instalacja zależności systemowych i Pythonowych
+RUN apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
+    python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
+    apk del .tmp-build-deps && \
     rm -rf /tmp
 
+# Utwórz użytkownika django-user
+RUN adduser --disabled-password --no-create-home django-user
+
+# Ustaw PATH
 ENV PATH="/py/bin:$PATH"
 
+# Przełącz na użytkownika django-user
 USER django-user
 
+# Expose port 8000
+EXPOSE 8000
+
+# CMD do uruchomienia serwera Django
 CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000"]
