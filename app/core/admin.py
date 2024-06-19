@@ -4,14 +4,13 @@ from django.utils.translation import gettext_lazy as _
 
 from core import models
 
-
 class UserAdmin(BaseUserAdmin):
     """Define the admin pages for users."""
     ordering = ['id']
-    list_display = ['email', 'name']
+    list_display = ['email', 'first_name', 'last_name', 'position']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal Info'), {'fields': ('name',)}),
+        (_('Personal Info'), {'fields': ('first_name', 'last_name', 'position')}),
         (
             _('Permissions'),
             {
@@ -32,14 +31,14 @@ class UserAdmin(BaseUserAdmin):
                 'email',
                 'password1',
                 'password2',
-                'name',
+                'first_name',
+                'last_name',
+                'position',
                 'is_active',
                 'is_staff',
                 'is_superuser',
             ),
         }),
     )
-
-
-
+    
 admin.site.register(models.User, UserAdmin)
