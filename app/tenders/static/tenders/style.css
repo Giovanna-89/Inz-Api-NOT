@@ -1,0 +1,37 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #F8F9FA;
+    color: #333333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #1F4D8E;
+}
+
+a {
+    color: #1F4D8E;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #E0F2F1;
+}
+
+button {
+    background-color: #1F4D8E;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #E0F2F1;
+}
+
+form {
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

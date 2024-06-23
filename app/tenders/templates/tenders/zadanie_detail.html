@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Szczegóły Zadania</title>
+    <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+</head>
+<body>
+    <h1>Szczegóły Zadania</h1>
+    <p>Nazwa zadania: {{ zadanie.nazwa_zadania }}</p>
+    <p>Kontrahent: {{ zadanie.kontrahent.nazwa_kontrahenta }}</p>
+    <p>Rodzaj zadania: {{ zadanie.rodzaj_zadania.nazwa }}</p>
+    <p>Status: {{ zadanie.status.nazwa }}</p>
+    <p>Termin statusu: {{ zadanie.termin_statusu }}</p>
+    <p>Wartość zadania: {{ zadanie.wartosc_zadania }}</p>
+    <p>Wycena: {{ zadanie.wycena }}</p>
+    <p>Wykonawca: {{ zadanie.wykonawca }}</p>
+    <p>Wycena wykonawcy: {{ zadanie.wycena_wykonawcy }}</p>
+    <p>Przypisany pracownik: {{ zadanie.przypisany_pracownik.email }}</p>
+    <a href="{% url 'przetargi' %}">Powrót do listy</a>
+    <a href="{% url 'zadanie_edytuj' zadanie.id %}">Edytuj</a>
+</body>
+</html>
+
