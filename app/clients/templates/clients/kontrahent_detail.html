@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Szczegóły Kontrahenta</title>
+    <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+</head>
+<body>
+    <h1>Szczegóły Kontrahenta</h1>
+    <p>Nazwa kontrahenta: {{ kontrahent.nazwa_kontrahenta }}</p>
+    <p>Typ kontrahenta: {{ kontrahent.typ_kontrahenta }}</p>
+    <p>Ulica: {{ kontrahent.ulica }}</p>
+    <p>Kod pocztowy: {{ kontrahent.kod_pocztowy }}</p>
+    <p>Miasto: {{ kontrahent.miasto }}</p>
+    <p>Powiat: {{ kontrahent.powiat }}</p>
+    <a href="{% url 'kontrahenci' %}">Powrót do listy</a>
+    <a href="{% url 'kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Kontrahentów</title>
+    <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+</head>
+<body>
+    <h1>Lista Kontrahentów</h1>
+    <a href="{% url 'kontrahent_nowy' %}">Dodaj nowego kontrahenta</a>
+    <ul>
+        {% for kontrahent in kontrahenci %}
+            <li>
+                <a href="{% url 'kontrahent_szczegoly' kontrahent.id %}">{{ kontrahent.nazwa_kontrahenta }}</a> 
+                <a href="{% url 'kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
