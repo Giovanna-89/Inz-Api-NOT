@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Szczegóły Specjalisty</title>
+    <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+</head>
+<body>
+    <h1>Szczegóły Specjalisty</h1>
+    <p>Imię: {{ specjalista.imie }}</p>
+    <p>Nazwisko: {{ specjalista.nazwisko }}</p>
+    <p>Telefon: {{ specjalista.telefon }}</p>
+    <p>Email: {{ specjalista.email }}</p>
+    <p>Branża: {{ specjalista.branza }}</p>
+    <p>Rodzaj uprawnień: {{ specjalista.rodzaj_uprawnien }}</p>
+    <p>Obszar działania: {{ specjalista.obszar_dzialania.all|join:", " }}</p>
+    <a href="{% url 'specjalisci' %}">Powrót do listy</a>
+    <a href="{% url 'specjalista_edytuj' specjalista.id %}">Edytuj</a>
+</body>
+</html>
