@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import KontrahentListView, KontrahentCreateView, KontrahentUpdateView, KontrahentDetailView
 
+app_name = 'clients'
+
 urlpatterns = [
     path('kontrahenci/', KontrahentListView.as_view(), name='kontrahenci'),
     path('kontrahent/nowy/', KontrahentCreateView.as_view(), name='kontrahent_nowy'),

@@ -35,6 +35,15 @@ class CustomAuthenticationForm(AuthenticationForm):
         }
 
 class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].help_text = _("Nowe hasło musi zawierać co najmniej 12 znaków, w tym co najmniej jedną cyfrę, jedną małą literę, jedną dużą literę oraz jeden znak specjalny.")
+    
+    old_password = forms.CharField(
+        label=_("Stare hasło"),
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        strip=False,
+    )
     new_password1 = forms.CharField(
         label=_("Nowe hasło"),
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
@@ -45,10 +54,10 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         strip=False,
     )
+   
 
     class Meta:
-        model = User
-        fields = ('new_password1', 'new_password2')
+        fields = ('old_password', 'new_password1', 'new_password2')
 
     def clean_new_password1(self):
         password = self.cleaned_data.get('new_password1')

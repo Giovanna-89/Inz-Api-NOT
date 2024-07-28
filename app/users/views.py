@@ -6,30 +6,57 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib import messages
+import logging
 
 User = get_user_model()
+
+# Konfiguracja loggera
+logger = logging.getLogger(__name__)
 
 class CustomLoginView(LoginView):
     authentication_form = CustomAuthenticationForm
     template_name = 'users/login.html'
 
+    def form_invalid(self, form):
+        messages.error(self.request, "Błędne dane logowania. Spróbuj ponownie.")
+        return super().form_invalid(form)
+
     def form_valid(self, form):
         user = form.get_user()
         if user.password_change_due():
-            return redirect('password_change')
+            return redirect('users:password_change')
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse_lazy('przetargi')
+        return reverse_lazy('tenders:przetargi')
 
 class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     form_class = CustomPasswordChangeForm
-    success_url = reverse_lazy('przetargi')
+    success_url = reverse_lazy('tenders:przetargi')
     template_name = 'users/password_change.html'
 
     def form_valid(self, form):
-        form.save()
+        logger.debug("Form is valid")
+        # Debugowanie
+        logger.debug(f"Old password: {form.cleaned_data.get('old_password')}")
+        logger.debug(f"New password1: {form.cleaned_data.get('new_password1')}")
+        logger.debug(f"New password2: {form.cleaned_data.get('new_password2')}")
+
+        # Sprawdzenie zgodności haseł
+        new_password1 = form.cleaned_data.get('new_password1')
+        new_password2 = form.cleaned_data.get('new_password2')
+        if new_password1 != new_password2:
+            messages.error(self.request, "Hasła nie są zgodne.")
+            return self.form_invalid(form)
+
+        response = super().form_valid(form)
         self.request.user.password_change_date = timezone.now()
         self.request.user.save()
         messages.success(self.request, 'Twoje hasło zostało pomyślnie zmienione.')
-        return super().form_valid(form)
+        return response
+
+    def form_invalid(self, form):
+        errors = form.errors.as_text()
+        logger.error(f"Form errors: {errors}")
+        messages.error(self.request, f"Wystąpił błąd podczas zmiany hasła. Upewnij się, że nowe hasła są zgodne i spełniają wymagania. {errors}")
+        return super().form_invalid(form)

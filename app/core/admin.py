@@ -54,3 +54,5 @@ admin.site.register(models.RodzajUprawnien)
 admin.site.register(models.ObszarDzialania)
 admin.site.register(models.Zadanie)
 admin.site.register(models.SpecjalistaZadania)
+admin.site.register(models.SpecjalistaBranza)
+

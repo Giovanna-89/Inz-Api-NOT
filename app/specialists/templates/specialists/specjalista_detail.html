@@ -13,7 +13,6 @@
     <p>Telefon: {{ specjalista.telefon }}</p>
     <p>Email: {{ specjalista.email }}</p>
     <p>Branża: {{ specjalista.branza }}</p>
-    <p>Rodzaj uprawnień: {{ specjalista.rodzaj_uprawnien }}</p>
     <p>Obszar działania: {{ specjalista.obszar_dzialania.all|join:", " }}</p>
     <a href="{% url 'specjalisci' %}">Powrót do listy</a>
     <a href="{% url 'specjalista_edytuj' specjalista.id %}">Edytuj</a>

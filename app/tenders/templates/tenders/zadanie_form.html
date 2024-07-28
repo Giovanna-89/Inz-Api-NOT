@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
 </head>
 <body>
-    <h1>{{ view.object.id|yesno:"Edytuj zadanie,Dodaj nowe zadanie" }}</h1>
+    <h1>{{ view.object.id|yesno:"Edytuj zadanie, Dodaj nowe zadanie" }}</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Zapisz</button>
     </form>
-    <a href="{% url 'przetargi' %}">Powrót do listy</a>
+    <a href="{% url 'tenders:przetargi' %}">Powrót do listy</a>
 </body>
 </html>

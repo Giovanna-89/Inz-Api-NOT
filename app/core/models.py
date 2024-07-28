@@ -62,9 +62,15 @@ class Powiat(models.Model):
     def __str__(self):
         return self.nazwa
 
+class Typ(models.Model):
+    nazwa = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.nazwa
+
 class Kontrahent(models.Model):
     nazwa_kontrahenta = models.CharField(max_length=255)
-    typ_kontrahenta = models.CharField(max_length=255)
+    typ_kontrahenta = models.ForeignKey(Typ, on_delete=models.CASCADE)
     ulica = models.CharField(max_length=255)
     kod_pocztowy = models.CharField(max_length=10)
     miasto = models.CharField(max_length=255)
@@ -72,12 +78,6 @@ class Kontrahent(models.Model):
 
     def __str__(self):
         return self.nazwa_kontrahenta
-
-class Typ(models.Model):
-    nazwa = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.nazwa
 
 class Status(models.Model):
     nazwa = models.CharField(max_length=255)
@@ -91,11 +91,16 @@ class RodzajZadania(models.Model):
     def __str__(self):
         return self.nazwa
 
+class Branza(models.Model):
+    nazwa = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.nazwa
+
 class Specjalista(models.Model):
     imie = models.CharField(max_length=255)
     nazwisko = models.CharField(max_length=255)
-    branza = models.ForeignKey('Branza', on_delete=models.CASCADE)
-    rodzaj_uprawnien = models.ForeignKey('RodzajUprawnien', on_delete=models.CASCADE)
+    branza = models.ManyToManyField(Branza, through='SpecjalistaBranza')
     telefon = models.CharField(max_length=15)
     email = models.EmailField()
     obszar_dzialania = models.ManyToManyField(Powiat, through='ObszarDzialania')
@@ -103,17 +108,16 @@ class Specjalista(models.Model):
     def __str__(self):
         return f"{self.imie} {self.nazwisko}"
 
-class Branza(models.Model):
-    nazwa = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.nazwa
-
 class RodzajUprawnien(models.Model):
     nazwa = models.CharField(max_length=255)
 
     def __str__(self):
         return self.nazwa
+
+class SpecjalistaBranza(models.Model):
+    specjalista = models.ForeignKey(Specjalista, on_delete=models.CASCADE)
+    Branza = models.ForeignKey(Branza, on_delete=models.CASCADE)
+    rodzaj_uprawnien = models.ForeignKey('RodzajUprawnien', on_delete=models.CASCADE)
 
 class ObszarDzialania(models.Model):
     specjalista = models.ForeignKey(Specjalista, on_delete=models.CASCADE)
@@ -128,8 +132,6 @@ class Zadanie(models.Model):
     termin_statusu = models.DateField()
     wartosc_zadania = models.DecimalField(max_digits=10, decimal_places=2)
     wycena = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    wykonawca = models.CharField(max_length=255)
-    wycena_wykonawcy = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     przypisany_pracownik = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -138,3 +140,4 @@ class Zadanie(models.Model):
 class SpecjalistaZadania(models.Model):
     specjalista = models.ForeignKey(Specjalista, on_delete=models.CASCADE)
     zadanie = models.ForeignKey(Zadanie, on_delete=models.CASCADE)
+    wycena_wykonawcy = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

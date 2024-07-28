@@ -87,6 +87,13 @@
         <div class="logo">
             <img src="{% static 'images/logo.png' %}" alt="FSNT NOT Płock">
         </div>
+        {% if messages %}
+            <div class="error-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
         <form method="post">
             {% csrf_token %}
             <div class="form-group">

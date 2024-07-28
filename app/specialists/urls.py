@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import SpecjalistaListView, SpecjalistaCreateView, SpecjalistaUpdateView, SpecjalistaDetailView
 
+app_name = 'specialists'
+
 urlpatterns = [
     path('specjalisci/', SpecjalistaListView.as_view(), name='specjalisci'),
     path('specjalista/nowy/', SpecjalistaCreateView.as_view(), name='specjalista_nowy'),

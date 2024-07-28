@@ -5,11 +5,11 @@ class ZadanieCreateForm(forms.ModelForm):
     class Meta:
         model = Zadanie
         fields = [
-            'nazwa_zadania', 'kontrahent', 'rodzaj_zadania', 'status', 'termin_statusu', 
-            'wartosc_zadania', 'wycena', 'wykonawca', 'wycena_wykonawcy'
+            'nazwa_zadania', 'kontrahent', 'rodzaj_zadania', 'status', 'data_wprowadzenia','termin_statusu', 
+            'wartosc_zadania', 'wycena'
         ]
 
 class ZadanieUpdateForm(forms.ModelForm):
     class Meta:
         model = Zadanie
-        fields = ['status', 'termin_statusu', 'wycena', 'wykonawca', 'wycena_wykonawcy']
+        fields = ['status', 'termin_statusu', 'wycena']
