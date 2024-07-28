@@ -136,6 +136,9 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = reverse_lazy('tenders:przetargi')
 LOGIN_REDIRECT_URL = reverse_lazy('users:password_change')
 
+LOGOUT_REDIRECT_URL = '/'
+
+
 # Logging configuration
 LOGGING = {
     'version': 1,

@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Przypisz Specjalistów do Zadania</title>
+    <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+</head>
+<body>
+    <h1>Przypisz Specjalistów do Zadania</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Zapisz</button>
+    </form>
+    <a href="{% url 'tenders:przetargi' %}">Powrót do listy</a>
+</body>
+</html>
