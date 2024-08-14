@@ -59,6 +59,10 @@
         </div>
         <div class="content">
             <h1>Lista Przetargów</h1>
+            <form method="get" action="{% url 'tenders:przetargi' %}">
+                <input type="text" name="search" placeholder="Szukaj..." value="{{ request.GET.search }}">
+                <button type="submit">Szukaj</button>
+            </form>
             <table>
                 <thead>
                     <tr>

@@ -56,8 +56,8 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     )
    
 
-    class Meta:
-        fields = ('old_password', 'new_password1', 'new_password2')
+class Meta:
+    fields = ('old_password', 'new_password1', 'new_password2')
 
     def clean_new_password1(self):
         password = self.cleaned_data.get('new_password1')

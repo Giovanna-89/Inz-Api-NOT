@@ -1,5 +1,5 @@
 from django import forms
-from core.models import Zadanie, SpecjalistaZadania, Specjalista
+from core.models import Zadanie, SpecjalistaZadania, Specjalista, RodzajZadania
 
 class ZadanieCreateForm(forms.ModelForm):
     class Meta:
@@ -21,3 +21,8 @@ class SpecjalistaZadaniaForm(forms.ModelForm):
     class Meta:
         model = SpecjalistaZadania
         fields = ['specjalista', 'wycena_wykonawcy']
+
+class RodzajZadaniaCreateForm(forms.ModelForm):
+    class Meta:
+        model = RodzajZadania
+        fields = ['nazwa']

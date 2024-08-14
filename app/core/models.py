@@ -7,6 +7,9 @@ from django.contrib.auth.models import (
 from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 class UserManager(BaseUserManager):
     """Manager for users."""
@@ -18,6 +21,7 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, first_name=first_name, last_name=last_name, position=position, **extra_fields)
         user.set_password(password)
+        user.password_change_date = timezone.now()
         user.save(using=self._db)
         return user
     
@@ -45,9 +49,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['first_name', 'last_name', 'position']
 
     def password_change_due(self):
-        if not self.password_change_date:
+        if self.password_change_date is None:
             return True
         return timezone.now() > self.password_change_date + timedelta(days=30)
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.email})"
 
 class Wojewodztwo(models.Model):
     nazwa = models.CharField(max_length=255)

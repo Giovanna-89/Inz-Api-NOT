@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PrzetargiListView, ZadanieCreateView, ZadanieUpdateView, ZadanieDetailView, ZadanieAssignView
+from .views import PrzetargiListView, ZadanieCreateView, ZadanieUpdateView, ZadanieDetailView, ZadanieAssignView, RodzajZadaniaCreateView
 
 app_name = 'tenders'
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path('zadanie/<int:pk>/edytuj/', ZadanieUpdateView.as_view(), name='zadanie_edytuj'),
     path('zadanie/<int:pk>/', ZadanieDetailView.as_view(), name='zadanie_szczegoly'),
     path('zadanie/<int:pk>/przypisz/', ZadanieAssignView.as_view(), name='zadanie_przypisz'),
+    path('rodzaj_zadania/nowy/', RodzajZadaniaCreateView.as_view(), name='rodzaj_zadania_nowy'),
 ]

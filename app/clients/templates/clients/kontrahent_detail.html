@@ -14,7 +14,7 @@
     <p>Kod pocztowy: {{ kontrahent.kod_pocztowy }}</p>
     <p>Miasto: {{ kontrahent.miasto }}</p>
     <p>Powiat: {{ kontrahent.powiat }}</p>
-    <a href="{% url 'kontrahenci' %}">Powrót do listy</a>
-    <a href="{% url 'kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
+    <a href="{% url 'clients:kontrahenci' %}">Powrót do listy</a>
+    <a href="{% url 'clients:kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
 </body>
 </html>
