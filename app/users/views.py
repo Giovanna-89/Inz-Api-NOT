@@ -22,7 +22,7 @@ class CustomLoginView(LoginView):
     template_name = 'users/login.html'
 
     def get(self, request, *args, **kwargs):
-        csrf_token = get_token(request)  # Wymuszamy wygenerowanie nowego tokena
+        csrf_token = get_token(request)  
         logger.debug(f"CSRF Token on GET: {csrf_token}")
         response = super().get(request, *args, **kwargs)
         response.set_cookie('csrftoken', csrf_token)
