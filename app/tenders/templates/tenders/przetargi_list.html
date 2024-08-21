@@ -6,32 +6,164 @@
     <title>Lista Przetargów</title>
     <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333333;
+            font-size: 14px;
+        }
+
         header {
             position: relative;
             width: 100%;
             padding: 10px;
-            background-color: #f8f9fa; /* Możesz zmienić kolor tła, jeśli chcesz */
+            background-color: #F8F9FA;
         }
 
         .user-info {
             position: absolute;
             top: 10px;
             right: 20px;
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
-            color: #333333; /* Kolor tekstu */
+            font-size: 14px;
+            color: #333333;
         }
 
         .user-info a {
             margin-left: 10px;
             text-decoration: none;
-            font-family: 'Roboto', sans-serif;
-            color: #1F4D8E; /* Kolor linku */
+            color: #1F4D8E;
         }
 
         .user-info a:hover {
             text-decoration: underline;
             color: #E0F2F1;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            width: 160px;
+            padding: 10px;
+            background-color: #F8F9FA;
+        }
+
+        .logo {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar nav ul li {
+            margin: 8px 0;
+        }
+
+        .sidebar nav ul li a {
+            color: #1F4D8E;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            display: block;
+            padding: 6px 0;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+            border-radius: 4px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .content h1 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-form input[type="text"] {
+            padding: 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex-grow: 1;
+        }
+
+        .search-form button, .add-task-button {
+            background-color: #1F4D8E;
+            color: #FFFFFF;
+            border: none;
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .add-task-button {
+            margin-left: auto;
+        }
+
+        .search-form button:hover, .add-task-button:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #1F4D8E;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #ddd;
+        }
+
+        th a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        th a:hover {
+            text-decoration: underline;
+        }
+
+        .sort-arrow {
+            font-size: 10px;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -46,11 +178,10 @@
     </header>
     <div class="container">
         <div class="sidebar">
-            <img src="{% static 'images/logo.png' %}" alt="Logo NOT">
+            <img src="{% static 'images/logo.png' %}" alt="Logo NOT" class="logo">
             <nav>
                 <ul>
                     <li><a href="{% url 'tenders:przetargi' %}">Lista Przetargów</a></li>
-                    <li><a href="{% url 'tenders:zadanie_nowe' %}">Dodaj nowe zadanie</a></li>
                     <li><a href="{% url 'clients:kontrahenci' %}">Lista Kontrahentów</a></li>
                     <li><a href="{% url 'specialists:specjalisci' %}">Lista Specjalistów</a></li>
                     <li><a href="{% url 'reports:raport' %}">Generuj raport</a></li>
@@ -59,19 +190,70 @@
         </div>
         <div class="content">
             <h1>Lista Przetargów</h1>
-            <form method="get" action="{% url 'tenders:przetargi' %}">
+            <form method="get" action="{% url 'tenders:przetargi' %}" class="search-form">
                 <input type="text" name="search" placeholder="Szukaj..." value="{{ request.GET.search }}">
                 <button type="submit">Szukaj</button>
+                <a href="{% url 'tenders:zadanie_nowe' %}" class="add-task-button">Dodaj nowe zadanie</a>
             </form>
             <table>
                 <thead>
                     <tr>
-                        <th>Nazwa Zadania</th>
-                        <th>Kontrahent</th>
-                        <th>Rodzaj Zadania</th>
-                        <th>Status</th>
-                        <th>Termin Zadania</th>
-                        <th>Przypisany Pracownik</th>
+                        <th>
+                            <a href="?sort=nazwa_zadania&direction={% if sort == 'nazwa_zadania' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Nazwa Zadania
+                                {% if sort == 'nazwa_zadania' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=kontrahent__nazwa_kontrahenta&direction={% if sort == 'kontrahent__nazwa_kontrahenta' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Kontrahent
+                                {% if sort == 'kontrahent__nazwa_kontrahenta' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=kontrahent__typ_kontrahenta&direction={% if sort == 'kontrahent__typ_kontrahenta' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Typ Kontrahenta
+                                {% if sort == 'kontrahent__typ_kontrahenta' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=rodzaj_zadania__nazwa&direction={% if sort == 'rodzaj_zadania__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Rodzaj Zadania
+                                {% if sort == 'rodzaj_zadania__nazwa' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=status__nazwa&direction={% if sort == 'status__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Status
+                                {% if sort == 'status__nazwa' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=termin_statusu&direction={% if sort == 'termin_statusu' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Termin Zadania
+                                {% if sort == 'termin_statusu' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=przypisany_pracownik__last_name&direction={% if sort == 'przypisany_pracownik__last_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Przypisany Pracownik
+                                {% if sort == 'przypisany_pracownik__last_name' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
                         <th>Akcje</th>
                     </tr>
                 </thead>
@@ -80,13 +262,14 @@
                         <tr>
                             <td>{{ zadanie.nazwa_zadania }}</td>
                             <td>{{ zadanie.kontrahent.nazwa_kontrahenta }}</td>
+                            <td>{{ zadanie.kontrahent.typ_kontrahenta }}</td>
                             <td>{{ zadanie.rodzaj_zadania.nazwa }}</td>
                             <td>{{ zadanie.status.nazwa }}</td>
                             <td>{{ zadanie.termin_statusu }}</td>
                             <td>{{ zadanie.przypisany_pracownik.first_name }} {{ zadanie.przypisany_pracownik.last_name }}</td>
                             <td>
-                                <a href="{% url 'tenders:zadanie_edytuj' zadanie.id %}">Edytuj</a> | 
-                                <a href="{% url 'tenders:zadanie_przypisz' zadanie.id %}">Przypisz</a>
+                                <a href="{% url 'tenders:zadanie_edytuj' zadanie.id %}">Aktualizacja</a> |
+                                <a href="{% url 'tenders:zadanie_szczegoly' zadanie.id %}">Szczegóły</a>
                             </td>
                         </tr>
                     {% endfor %}

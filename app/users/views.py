@@ -46,9 +46,9 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     def form_valid(self, form):
         logger.debug("Form is valid")
         # Debugowanie
-        logger.debug(f"Old password: {form.cleaned_data.get('old_password')}")
-        logger.debug(f"New password1: {form.cleaned_data.get('new_password1')}")
-        logger.debug(f"New password2: {form.cleaned_data.get('new_password2')}")
+        # logger.debug(f"Old password: {form.cleaned_data.get('old_password')}")
+        # logger.debug(f"New password1: {form.cleaned_data.get('new_password1')}")
+        # logger.debug(f"New password2: {form.cleaned_data.get('new_password2')}")
 
         # Sprawdzenie zgodności haseł
         new_password1 = form.cleaned_data.get('new_password1')
@@ -60,11 +60,10 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
         response = super().form_valid(form)
         self.request.user.password_change_date = timezone.now()
         self.request.user.save()
-        messages.success(self.request, 'Twoje hasło zostało pomyślnie zmienione.')
         return response
 
     def form_invalid(self, form):
         errors = form.errors.as_text()
         logger.error(f"Form errors: {errors}")
-        messages.error(self.request, f"Wystąpił błąd podczas zmiany hasła. Upewnij się, że nowe hasła są zgodne i spełniają wymagania. {errors}")
+        messages.error(self.request, f"Wystąpił błąd podczas zmiany hasła. {errors}")
         return super().form_invalid(form)

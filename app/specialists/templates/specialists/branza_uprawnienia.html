@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zarządzaj Branżą i Uprawnieniami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #666666;
+            font-size: 14px;
+            background-color: #E0F2F1;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 100px;
+        }
+        h1 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1F4D8E;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333333;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #E0F2F1;
+            border-radius: 4px;
+            background-color: #F8F9FA;
+            margin-bottom: 20px;
+        }
+        #error-messages {
+            color: red;
+            margin-bottom: 20px;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"] {
+            background-color: #1F4D8E;
+            color: white;
+        }
+        button[type="submit"]:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #1F4D8E;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <a href="{% url 'tenders:przetargi' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a>
+        </div>
+        <h1>Zarządzaj Branżą i Uprawnieniami Specjalisty</h1>
+        <form method="post" onsubmit="return validateBranzaForm()">
+            {% csrf_token %}
+            <label for="branza">Dodaj Branżę:</label>
+            <select name="branza" id="branza">
+                {% for branza in available_branze %}
+                <option value="{{ branza.id }}">{{ branza.nazwa }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="rodzaj_uprawnien">Rodzaj Uprawnień:</label>
+            <select name="rodzaj_uprawnien" id="rodzaj_uprawnien">
+                {% for uprawnienie in available_uprawnienia %}
+                <option value="{{ uprawnienie.id }}">{{ uprawnienie.nazwa }}</option>
+                {% endfor %}
+            </select>
+
+            <div id="error-messages"></div>
+            <div class="actions">
+                <button type="button" onclick="window.history.back();">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        function validateBranzaForm() {
+            var branza = document.getElementById('branza').value;
+            var uprawnienia = document.getElementById('rodzaj_uprawnien').value;
+            var errorDiv = document.getElementById('error-messages');
+            errorDiv.innerHTML = '';
+        
+            var isExisting = false;
+            {% for b in branze %}
+                if ({{ b.branza.id }} == branza && {{ b.rodzaj_uprawnien.id }} == uprawnienia) {
+                    isExisting = true;
+                    break;
+                }
+            {% endfor %}
+        
+            if (isExisting) {
+                errorDiv.innerHTML = 'Ta branża z tymi uprawnieniami już istnieje dla tego specjalisty.';
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

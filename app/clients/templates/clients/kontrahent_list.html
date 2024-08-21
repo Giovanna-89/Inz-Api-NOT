@@ -5,17 +5,222 @@
     <meta charset="UTF-8">
     <title>Lista Kontrahentów</title>
     <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333333;
+            font-size: 14px;
+        }
+
+        header {
+            position: relative;
+            width: 100%;
+            padding: 10px;
+            background-color: #F8F9FA;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 14px;
+            color: #333333;
+        }
+
+        .user-info a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #1F4D8E;
+        }
+
+        .user-info a:hover {
+            text-decoration: underline;
+            color: #E0F2F1;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            width: 160px;
+            padding: 10px;
+            background-color: #F8F9FA;
+        }
+
+        .logo {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar nav ul li {
+            margin: 8px 0;
+        }
+
+        .sidebar nav ul li a {
+            color: #1F4D8E;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            display: block;
+            padding: 6px 0;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+            border-radius: 4px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .content h1 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-form input[type="text"] {
+            padding: 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex-grow: 1;
+        }
+
+        .search-form button, .add-task-button {
+            background-color: #1F4D8E;
+            color: #FFFFFF;
+            border: none;
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .add-task-button {
+            margin-left: auto;
+        }
+
+        .search-form button:hover, .add-task-button:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #1F4D8E;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #ddd;
+        }
+
+        th a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        th a:hover {
+            text-decoration: underline;
+        }
+
+        .sort-arrow {
+            font-size: 10px;
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Lista Kontrahentów</h1>
-    <a href="{% url 'clients:kontrahent_nowy' %}">Dodaj nowego kontrahenta</a>
-    <ul>
-        {% for kontrahent in kontrahenci %}
-            <li>
-                <a href="{% url 'clients:kontrahent_szczegoly' kontrahent.id %}">{{ kontrahent.nazwa_kontrahenta }}</a> 
-                <a href="{% url 'clients:kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
-            </li>
-        {% endfor %}
-    </ul>
+    <header>
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                <span>{{ user.first_name }} {{ user.last_name }}</span>
+                <a href="{% url 'users:logout' %}">Wyloguj się</a>
+            {% endif %}
+        </div>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <img src="{% static 'images/logo.png' %}" alt="Logo NOT" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="{% url 'tenders:przetargi' %}">Lista Przetargów</a></li>
+                    <li><a href="{% url 'clients:kontrahenci' %}">Lista Kontrahentów</a></li>
+                    <li><a href="{% url 'specialists:specjalisci' %}">Lista Specjalistów</a></li>
+                    <li><a href="{% url 'reports:raport' %}">Generuj raport</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="content">
+            <h1>Lista Kontrahentów</h1>
+            <form method="get" action="{% url 'clients:kontrahenci' %}" class="search-form">
+                <input type="text" name="search" value="{{ search }}" placeholder="Szukaj...">
+                <button type="submit">Szukaj</button>
+                <a href="{% url 'clients:kontrahent_nowy' %}" class="add-task-button">Dodaj nowego kontrahenta</a>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th><a href="?sort=nazwa_kontrahenta&direction={% if sort == 'nazwa_kontrahenta' and direction == 'asc' %}desc{% else %}asc{% endif %}">Nazwa Kontrahenta</a></th>
+                        <th><a href="?sort=typ_kontrahenta__nazwa&direction={% if sort == 'typ_kontrahenta__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">Rodzaj Kontrahenta</a></th>
+                        <th><a href="?sort=powiat__wojewodztwo__nazwa&direction={% if sort == 'powiat__wojewodztwo__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">Województwo</a></th>
+                        <th><a href="?sort=powiat__nazwa&direction={% if sort == 'powiat__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">Powiat</a></th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for kontrahent in kontrahenci %}
+                    <tr>
+                        <td>{{ kontrahent.nazwa_kontrahenta }}</td>
+                        <td>{{ kontrahent.typ_kontrahenta }}</td>
+                        <td>{{ kontrahent.powiat.wojewodztwo }}</td>
+                        <td>{{ kontrahent.powiat }}</td>
+                        <td>
+                            <a href="{% url 'clients:kontrahent_szczegoly' kontrahent.id %}">Szczegóły</a>
+                            <a href="{% url 'clients:kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>         
+        </div>
+    </div>
 </body>
 </html>

@@ -135,6 +135,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',  
 ]
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/tmp/app-messages'  # Zmień na odpowiednią ścieżkę
 
 # Logging configuration
 LOGGING = {

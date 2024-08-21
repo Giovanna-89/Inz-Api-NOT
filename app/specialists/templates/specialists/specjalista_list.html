@@ -5,17 +5,227 @@
     <meta charset="UTF-8">
     <title>Lista Specjalistów</title>
     <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333333;
+            font-size: 14px;
+        }
+
+        header {
+            position: relative;
+            width: 100%;
+            padding: 10px;
+            background-color: #F8F9FA;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 14px;
+            color: #333333;
+        }
+
+        .user-info a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #1F4D8E;
+        }
+
+        .user-info a:hover {
+            text-decoration: underline;
+            color: #E0F2F1;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            width: 160px;
+            padding: 10px;
+            background-color: #F8F9FA;
+        }
+
+        .logo {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar nav ul li {
+            margin: 8px 0;
+        }
+
+        .sidebar nav ul li a {
+            color: #1F4D8E;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            display: block;
+            padding: 6px 0;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+            border-radius: 4px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .content h1 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .add-button {
+            background-color: #1F4D8E;
+            color: #FFFFFF;
+            border: none;
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .add-button:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #1F4D8E;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #ddd;
+        }
+    </style>
 </head>
 <body>
-    <h1>Lista Specjalistów</h1>
-    <a href="{% url 'specjalista_nowy' %}">Dodaj nowego specjalistę</a>
-    <ul>
-        {% for specjalista in specjalisci %}
-            <li>
-                <a href="{% url 'specjalista_szczegoly' specjalista.id %}">{{ specjalista }}</a> 
-                <a href="{% url 'specjalista_edytuj' specjalista.id %}">Edytuj</a>
-            </li>
-        {% endfor %}
-    </ul>
+    <header>
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                <span>{{ user.first_name }} {{ user.last_name }}</span>
+                <a href="{% url 'users:logout' %}">Wyloguj się</a>
+            {% endif %}
+        </div>
+    </header>
+    <div class="container">
+        <div class="sidebar">
+            <img src="{% static 'images/logo.png' %}" alt="Logo NOT" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="{% url 'tenders:przetargi' %}">Lista Przetargów</a></li>
+                    <li><a href="{% url 'clients:kontrahenci' %}">Lista Kontrahentów</a></li>
+                    <li><a href="{% url 'specialists:specjalisci' %}">Lista Specjalistów</a></li>
+                    <li><a href="{% url 'reports:raport' %}">Generuj raport</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="content">
+            <h1>Lista Specjalistów</h1>
+            <form method="get">
+                <input type="text" name="search" placeholder="Szukaj..." value="{{ search }}">
+                <button type="submit">Szukaj</button>
+                <a href="{% url 'specialists:specjalista_nowy' %}" class="add-button">Dodaj specjalistę</a>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <a href="?sort=imie&direction={% if sort == 'imie' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Imię
+                                {% if sort == 'imie' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=nazwisko&direction={% if sort == 'nazwisko' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Nazwisko
+                                {% if sort == 'nazwisko' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=branza__nazwa&direction={% if sort == 'branza__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Branże
+                                {% if sort == 'branza__nazwa' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=obszar_dzialania__powiat__nazwa&direction={% if sort == 'obszar_dzialania__powiat__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                                Obszar działania
+                                {% if sort == 'obszar_dzialania__powiat__nazwa' %}
+                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for specjalista in specialists %}
+                        <tr>
+                            <td>{{ specjalista.imie }}</td>
+                            <td>{{ specjalista.nazwisko }}</td>
+                            <td>
+                                {% for sb in specjalista.specjalistabranza_set.all %}
+                                    {{ sb.Branza.nazwa }} ({{ sb.rodzaj_uprawnien.nazwa }}){% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for od in specjalista.obszardzialania_set.all %}
+                                    {{ od.powiat.nazwa }} ({{ od.powiat.wojewodztwo.nazwa }}){% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{% url 'specialists:specjalista_szczegoly' specjalista.id %}">Szczegóły</a> |
+                                <a href="{% url 'specialists:specjalista_edytuj' specjalista.id %}">Aktualizuj kontakt</a> |
+                                <a href="{% url 'specialists:specjalista_obszar_dzialania' specjalista.id %}">Dodaj obszar działania</a> |
+                                <a href="{% url 'specialists:specjalista_branza_uprawnienia' specjalista.id %}">Dodaj branżę</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>                
+            </table>
+        </div>
+    </div>
 </body>
 </html>

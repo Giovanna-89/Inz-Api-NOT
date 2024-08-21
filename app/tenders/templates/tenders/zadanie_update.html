@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Aktualizualizaccja zadania</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #666666;
+            font-size: 14px;
+            background-color: #E0F2F1;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 100px;
+        }
+        h1 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1F4D8E;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .info {
+            background-color: #F8F9FA;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .info p {
+            margin: 5px 0;
+        }
+        form {
+            display: grid;
+            gap: 15px;
+        }
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333333;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #E0F2F1;
+            border-radius: 4px;
+            background-color: #F8F9FA;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"] {
+            background-color: #1F4D8E; /* Stan "aktywny" */
+            color: white;
+        }
+        button[type="submit"]:hover {
+            background-color: #E0F2F1; /* Stan "hover" */
+            color: #1F4D8E;
+        }
+        button[type="submit"]:active {
+            background-color: #1F4D8E; /* Stan "aktywny" - można zostawić taki sam jak podstawowy */
+            color: white;
+        }
+        button[type="submit"]:disabled {
+            background-color: #D3D3D3; /* Stan "wyłączony" */
+            color: #666666;
+            cursor: not-allowed;
+        }
+        button[type="button"] {
+            background-color: #F4F0EC;
+            color: #333333;
+        }
+        button[type="button"]:hover {
+            background-color: #E0F2F1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <a href="{% url 'tenders:przetargi' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a>
+        </div>
+        <h1>Aktualizuj dane zadania</h1>
+        <div class="info">
+            <p><strong>Nazwa:</strong> {{ zadanie.nazwa_zadania }}</p>
+            <p><strong>Kontrahent:</strong> {{ zadanie.kontrahent.nazwa_kontrahenta }}</p>
+            <p><strong>Rodzaj zadania:</strong> {{ zadanie.rodzaj_zadania.nazwa }}</p>
+            <p><strong>Pracownik przypisany:</strong> {{ zadanie.przypisany_pracownik.first_name }} {{ zadanie.przypisany_pracownik.last_name }} ({{ zadanie.przypisany_pracownik.position }})</p>
+            <p><strong>Data wprowadzenia:</strong> {{ zadanie.data_wprowadzenia }}</p>
+            <p><strong>Termin statusu:</strong> {{ zadanie.termin_statusu }}</p>
+            {% if zadanie.status.nazwa == "W trakcie" or zadanie.status.nazwa == "Zakończony" %}
+            <p><strong>Wycena:</strong> {{ zadanie.wycena }}</p>
+            <p><strong>Specjaliści:</strong> 
+                {% for specjalista in zadanie.specjalista_zadania_set.all %}
+                    <br>{{ specjalista.specjalista.imie }} {{ specjalista.specjalista.nazwisko }} - Wycena: {{ specjalista.wycena_wykonawcy }}
+                {% endfor %}
+            </p>
+            {% endif %}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <div class="actions">
+                <button type="button" onclick="window.history.back();">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

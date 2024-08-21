@@ -1,3 +1,4 @@
+<!-- specjalista_detail.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="pl">
@@ -12,9 +13,15 @@
     <p>Nazwisko: {{ specjalista.nazwisko }}</p>
     <p>Telefon: {{ specjalista.telefon }}</p>
     <p>Email: {{ specjalista.email }}</p>
-    <p>Branża: {{ specjalista.branza }}</p>
+    <p>Branże: {{ specjalista.branza.all|join:", " }}</p>
     <p>Obszar działania: {{ specjalista.obszar_dzialania.all|join:", " }}</p>
-    <a href="{% url 'specjalisci' %}">Powrót do listy</a>
-    <a href="{% url 'specjalista_edytuj' specjalista.id %}">Edytuj</a>
+    <p>Zadania:</p>
+    <ul>
+        {% for zadanie in zadania %}
+            <li>{{ zadanie.nazwa_zadania }} - Wycena: {{ zadanie.wycena_wykonawcy }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'specialists:specjalisci' %}">Powrót do listy</a>
+    <a href="{% url 'specialists:specjalista_edytuj' specjalista.id %}">Edytuj</a>
 </body>
 </html>

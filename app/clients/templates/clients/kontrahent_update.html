@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Edytuj kontakt kontrahenta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            color: #666666; 
+            font-size: 14px; 
+            background-color: #E0F2F1; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background-color: #FFFFFF; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+            padding: 30px; 
+        }
+        .logo { text-align: center; margin-bottom: 20px; }
+        .logo img { max-width: 100px; }
+        h1 { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: #1F4D8E; 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        form { display: grid; gap: 15px; }
+        label { 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: #333333; 
+        }
+        input[type="text"], input[type="email"], select { 
+            width: 100%; 
+            padding: 10px; 
+            font-size: 14px; 
+            border: 1px solid #E0F2F1; 
+            border-radius: 4px; 
+            background-color: #F8F9FA; 
+        }
+        .readonly-field {
+            font-size: 14px;
+            padding: 10px;
+            background-color: #E9ECEF;
+            border-radius: 4px;
+        }
+        .errorlist { 
+            color: red; 
+            font-size: 12px; 
+            margin-top: 5px; 
+        }
+        .actions { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 20px; 
+        }
+        button { 
+            padding: 12px 24px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+        }
+        button[type="submit"] { 
+            background-color: #1F4D8E; 
+            color: white; 
+        }
+        button[type="submit"]:hover { 
+            background-color: #E0F2F1; 
+            color: #1F4D8E; 
+        }
+        button[type="button"] { 
+            background-color: #F4F0EC; 
+            color: #333333; 
+        }
+        button[type="button"]:hover { 
+            background-color: #E0F2F1; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><a href="{% url 'clients:kontrahenci' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a></div>
+        <h1>Edytuj kontakt kontrahenta</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label>Nazwa kontrahenta:</label>
+                <div class="readonly-field">{{ kontrahent.nazwa_kontrahenta }}</div>
+            </div>
+            <div>
+                <label>Typ kontrahenta:</label>
+                <div class="readonly-field">{{ kontrahent.typ_kontrahenta }}</div>
+            </div>
+            <div>
+                <label>Ulica:</label>
+                <div class="readonly-field">{{ kontrahent.ulica }}</div>
+            </div>
+            <div>
+                <label>Nr budynku/lokalu:</label>
+                <div class="readonly-field">{{ kontrahent.nr_budynku_lokalu }}</div>
+            </div>
+            <div>
+                <label>Kod pocztowy:</label>
+                <div class="readonly-field">{{ kontrahent.kod_pocztowy }}</div>
+            </div>
+            <div>
+                <label>Miasto:</label>
+                <div class="readonly-field">{{ kontrahent.miasto }}</div>
+            </div>
+            <div>
+                <label for="id_email">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="errorlist">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="id_telefon">Telefon</label>
+                {{ form.telefon }}
+                {% if form.telefon.errors %}
+                    <div class="errorlist">{{ form.telefon.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="actions">
+                <button type="button" onclick="window.history.back();">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

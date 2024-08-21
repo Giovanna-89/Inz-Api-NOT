@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj kontrahenta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            color: #666666; 
+            font-size: 14px; 
+            background-color: #E0F2F1; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 30px; }
+        .logo { text-align: center; margin-bottom: 20px; }
+        .logo img { max-width: 100px; }
+        h1 { font-size: 18px; font-weight: bold; color: #1F4D8E; text-align: center; margin-bottom: 30px; }
+        form { display: grid; gap: 15px; }
+        label { font-size: 16px; font-weight: bold; color: #333333; }
+        input[type="text"], input[type="email"], input[type="number"], select { width: 100%; padding: 10px; font-size: 14px; border: 1px solid #E0F2F1; border-radius: 4px; background-color: #F8F9FA; }
+        .errorlist { color: red; font-size: 12px; margin-top: 5px; }
+        .actions { display: flex; justify-content: space-between; margin-top: 20px; }
+        button { padding: 12px 24px; font-size: 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+        button[type="submit"] { background-color: #1F4D8E; color: white; }
+        button[type="submit"]:hover { background-color: #E0F2F1; color: #1F4D8E; }
+        button[type="submit"]:active { background-color: #1F4D8E; color: white; }
+        button[type="button"] { background-color: #F4F0EC; color: #333333; }
+        button[type="button"]:hover { background-color: #E0F2F1; }
+        .add-powiat-btn {
+            font-size: 12px;
+            padding: 5px 10px;
+            background-color: #F4F0EC;
+            color: #333333;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .add-powiat-btn:hover {
+            background-color: #E0F2F1;
+        }
+        #id_powiat {
+            width: calc(100% - 130px);
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .powiat-container {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const wojewodztwoSelect = document.getElementById("id_wojewodztwo");
+            const powiatSelect = document.getElementById("id_powiat");
+
+            function filterPowiaty() {
+                const selectedWojewodztwo = wojewodztwoSelect.value;
+                Array.from(powiatSelect.options).forEach(option => {
+                    if (option.getAttribute("data-wojewodztwo") === selectedWojewodztwo || selectedWojewodztwo === "") {
+                        option.style.display = "";
+                    } else {
+                        option.style.display = "none";
+                    }
+                });
+                powiatSelect.value = ""; // Reset powiat selection when województwo changes
+            }
+
+            wojewodztwoSelect.addEventListener("change", filterPowiaty);
+            filterPowiaty(); // Run on page load
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><a href="{% url 'clients:kontrahenci' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a></div>
+        <h1>Dodaj kontrahenta</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label for="id_nazwa_kontrahenta">Nazwa kontrahenta</label>
+                {{ form.nazwa_kontrahenta }}
+                {{ form.nazwa_kontrahenta.errors }}
+            </div>
+            <div>
+                <label for="id_typ_kontrahenta">Typ kontrahenta</label>
+                {{ form.typ_kontrahenta }}
+                {{ form.typ_kontrahenta.errors }}
+            </div>
+            <div>
+                <label for="id_ulica">Ulica</label>
+                {{ form.ulica }}
+                {{ form.ulica.errors }}
+            </div>
+            <div>
+                <label for="id_nr_budynku_lokalu">Nr budynku/lokalu</label>
+                {{ form.nr_budynku_lokalu }}
+                {{ form.nr_budynku_lokalu.errors }}
+            </div>
+            <div>
+                <label for="id_kod_pocztowy">Kod pocztowy</label>
+                {{ form.kod_pocztowy }}
+                {{ form.kod_pocztowy.errors }}
+            </div>
+            <div>
+                <label for="id_miasto">Miasto</label>
+                {{ form.miasto }}
+                {{ form.miasto.errors }}
+            </div>
+            <div>
+                <label for="id_wojewodztwo">Województwo</label>
+                <select id="id_wojewodztwo" name="wojewodztwo" onchange="updatePowiaty()">
+                    <option value="">Wybierz województwo</option>
+                    {% for wojewodztwo in wojewodztwa %}
+                    <option value="{{ wojewodztwo.id }}">{{ wojewodztwo.nazwa }}</option>
+                    {% endfor %}
+                </select>
+                {% if form.wojewodztwo.errors %}
+                    <div class="errorlist">{{ form.wojewodztwo.errors }}</div>
+                {% endif %}
+            </div>
+            <div class='powiat-container'>
+                <label for="id_powiat">Powiat</label>
+                <select id="id_powiat" name="powiat">
+                    <option value="">Wybierz powiat</option>
+                    {% for powiat in powiaty %}
+                    <option value="{{ powiat.id }}" data-wojewodztwo="{{ powiat.wojewodztwo.id }}">{{ powiat.nazwa }}</option>
+                    {% endfor %}
+                </select>
+                {{ form.powiat.errors }}
+                <button type="button" class="add-powiat-btn" onclick="window.location.href='{% url 'clients:powiat_nowy' %}'">Dodaj powiat</button>
+            </div>
+            <div>
+                <label for="id_email">Email</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+            <div>
+                <label for="id_telefon">Telefon</label>
+                {{ form.telefon }}
+                {{ form.telefon.errors }}
+            </div>
+            <div class="actions">
+                <button type="button" onclick="window.history.back();">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

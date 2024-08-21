@@ -4,21 +4,115 @@
 <head>
     <meta charset="UTF-8">
     <title>Szczegóły Zadania</title>
-    <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #666666;
+            font-size: 14px;
+            background-color: #E0F2F1;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 100px;
+        }
+        h1 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1F4D8E;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .zadanie-details {
+            background-color: #F8F9FA;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .zadanie-details p {
+            margin: 5px 0;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #1F4D8E;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"] {
+            background-color: #1F4D8E;
+            color: white;
+        }
+        button[type="submit"]:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #1F4D8E;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Szczegóły Zadania</h1>
-    <p>Nazwa zadania: {{ zadanie.nazwa_zadania }}</p>
-    <p>Kontrahent: {{ zadanie.kontrahent.nazwa_kontrahenta }}</p>
-    <p>Rodzaj zadania: {{ zadanie.rodzaj_zadania.nazwa }}</p>
-    <p>Status: {{ zadanie.status.nazwa }}</p>
-    <p>Termin statusu: {{ zadanie.data_wprowadzenia }}</p>
-    <p>Termin statusu: {{ zadanie.termin_statusu }}</p>
-    <p>Wartość zadania: {{ zadanie.wartosc_zadania }}</p>
-    <p>Wycena: {{ zadanie.wycena }}</p>
-    <p>Przypisany pracownik: {{ zadanie.przypisany_pracownik.email }}</p>
-    <a href="{% url 'tenders:przetargi' %}">Powrót do listy</a>
-    <a href="{% url 'zadanie_edytuj' zadanie.id %}">Edytuj</a>
+    <div class="container">
+        <div class="logo">
+            <a href="{% url 'tenders:przetargi' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a>
+        </div>
+        <h1>Szczegóły Zadania</h1>
+        <div class="zadanie-details">
+            <p><strong>Nazwa zadania:</strong> {{ zadanie.nazwa_zadania }}</p>
+            <p><strong>Kontrahent:</strong> {{ zadanie.kontrahent.nazwa_kontrahenta }}</p>
+            <p><strong>Rodzaj zadania:</strong> {{ zadanie.rodzaj_zadania.nazwa }}</p>
+            <p><strong>Status:</strong> {{ zadanie.status.nazwa }}</p>
+            <p><strong>Data wprowadzenia:</strong> {{ zadanie.data_wprowadzenia }}</p>
+            <p><strong>Termin statusu:</strong> {{ zadanie.termin_statusu }}</p>
+            <p><strong>Wartość zadania:</strong> {% if zadanie.wartosc_zadania > 0 %} {{ zadanie.wartosc_zadania }} {% else %} Brak danych {% endif %}</p>
+            <p><strong>Wycena:</strong> {% if zadanie.wycena > 0 %} {{ zadanie.wycena }} {% else %} Brak danych {% endif %}</p>
+            <p><strong>Przypisany pracownik:</strong> {{ zadanie.przypisany_pracownik.first_name }} {{ zadanie.przypisany_pracownik.last_name }} ({{ zadanie.przypisany_pracownik.position }})</p>
+
+            {% if zadanie.status.nazwa == "W trakcie" %}
+                <h2>Przypisani specjaliści</h2>
+                <ul>
+                    {% for specjalista_zadanie in zadanie.specjalistazadania_set.all %}
+                        <li>{{ specjalista_zadanie.specjalista }} - Wycena: {{ specjalista_zadanie.wycena_wykonawcy }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="actions">
+            <button type="submit" onclick="window.history.back();">Powrót</button>
+        </div>
+    </div>
 </body>
 </html>
-

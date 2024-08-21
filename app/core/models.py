@@ -79,9 +79,12 @@ class Kontrahent(models.Model):
     nazwa_kontrahenta = models.CharField(max_length=255)
     typ_kontrahenta = models.ForeignKey(Typ, on_delete=models.CASCADE)
     ulica = models.CharField(max_length=255)
+    nr_budynku_lokalu = models.CharField(max_length=50)  # Nowe pole
     kod_pocztowy = models.CharField(max_length=10)
     miasto = models.CharField(max_length=255)
     powiat = models.ForeignKey(Powiat, on_delete=models.CASCADE)
+    email = models.EmailField(max_length=255, blank=True, null=True)  
+    telefon = models.CharField(max_length=15, blank=True, null=True)  
 
     def __str__(self):
         return self.nazwa_kontrahenta
@@ -107,10 +110,8 @@ class Branza(models.Model):
 class Specjalista(models.Model):
     imie = models.CharField(max_length=255)
     nazwisko = models.CharField(max_length=255)
-    branza = models.ManyToManyField(Branza, through='SpecjalistaBranza')
-    telefon = models.CharField(max_length=15)
-    email = models.EmailField()
-    obszar_dzialania = models.ManyToManyField(Powiat, through='ObszarDzialania')
+    telefon = models.CharField(max_length=15, blank=True)
+    email = models.EmailField(blank=True)
 
     def __str__(self):
         return f"{self.imie} {self.nazwisko}"
@@ -137,7 +138,7 @@ class Zadanie(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
     data_wprowadzenia = models.DateField()
     termin_statusu = models.DateField()
-    wartosc_zadania = models.DecimalField(max_digits=10, decimal_places=2)
+    wartosc_zadania = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     wycena = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     przypisany_pracownik = models.ForeignKey(User, on_delete=models.CASCADE)
 

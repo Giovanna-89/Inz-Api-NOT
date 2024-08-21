@@ -4,17 +4,118 @@
 <head>
     <meta charset="UTF-8">
     <title>Szczegóły Kontrahenta</title>
-    <link rel="stylesheet" href="{% static 'tenders/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #666666;
+            font-size: 14px;
+            background-color: #E0F2F1;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 100px;
+        }
+        h1 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1F4D8E;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1F4D8E;
+            margin-top: 20px;
+        }
+        p {
+            margin: 5px 0;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        ul li {
+            margin-bottom: 5px;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #1F4D8E;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="button"] {
+            background-color: #1F4D8E;
+            color: white;
+        }
+        button[type="button"]:hover {
+            background-color: #E0F2F1;
+            color: #1F4D8E;
+        }
+    </style>
 </head>
 <body>
-    <h1>Szczegóły Kontrahenta</h1>
-    <p>Nazwa kontrahenta: {{ kontrahent.nazwa_kontrahenta }}</p>
-    <p>Typ kontrahenta: {{ kontrahent.typ_kontrahenta }}</p>
-    <p>Ulica: {{ kontrahent.ulica }}</p>
-    <p>Kod pocztowy: {{ kontrahent.kod_pocztowy }}</p>
-    <p>Miasto: {{ kontrahent.miasto }}</p>
-    <p>Powiat: {{ kontrahent.powiat }}</p>
-    <a href="{% url 'clients:kontrahenci' %}">Powrót do listy</a>
-    <a href="{% url 'clients:kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
+    <div class="container">
+        <div class="logo">
+            <a href="{% url 'clients:kontrahenci' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a>
+        </div>
+        <h1>Szczegóły Kontrahenta</h1>
+        <p><strong>Nazwa kontrahenta:</strong> {{ kontrahent.nazwa_kontrahenta }}</p>
+        <p><strong>Ulica:</strong> {{ kontrahent.ulica }} {{ kontrahent.nr_budynku_lokalu }}</p>
+        <p><strong>Kod pocztowy:</strong> {{ kontrahent.kod_pocztowy }}</p>
+        <p><strong>Miasto:</strong> {{ kontrahent.miasto }}</p>
+        <p><strong>Powiat:</strong> {{ kontrahent.powiat }}</p>
+        <p><strong>Województwo:</strong> {{ kontrahent.powiat.wojewodztwo }}</p>
+        <p><strong>E-mail:</strong> {{ kontrahent.email }}</p>
+        <p><strong>Telefon:</strong> {{ kontrahent.telefon }}</p>
+        <p><strong>Typ kontrahenta:</strong> {{ kontrahent.typ_kontrahenta }}</p>
+
+        <h2>Zadania</h2>
+        <ul>
+            {% for zadanie in zadania %}
+                <li><a href="{% url 'tenders:zadanie_szczegoly' zadanie.id %}">{{ zadanie.nazwa_zadania }}</a> - Status: {{ zadanie.status.nazwa }}</li>
+            {% empty %}
+                <li>Brak przypisanych zadań</li>
+            {% endfor %}
+        </ul>
+
+        <div class="actions">
+            <a href="{% url 'clients:kontrahenci' %}">Powrót do listy</a>
+            <a href="{% url 'clients:kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
+        </div>
+    </div>
 </body>
 </html>
