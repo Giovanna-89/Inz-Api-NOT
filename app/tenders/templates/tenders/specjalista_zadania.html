@@ -3,7 +3,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Aktualizualizaccja zadania</title>
+    <title>Przypisz Specjalistę do Zadania</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -36,34 +36,24 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        .info {
-            background-color: #F8F9FA;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .info p {
-            margin: 5px 0;
-        }
-        form {
-            display: grid;
-            gap: 15px;
-        }
         label {
             font-size: 16px;
             font-weight: bold;
             color: #333333;
         }
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
+        input, select {
             width: 100%;
             padding: 10px;
             font-size: 14px;
             border: 1px solid #E0F2F1;
             border-radius: 4px;
             background-color: #F8F9FA;
+            margin-bottom: 20px;
+        }
+        .errorlist {
+            color: red;
+            margin-top: -15px;
+            margin-bottom: 15px;
         }
         .actions {
             display: flex;
@@ -80,21 +70,12 @@
             transition: background-color 0.3s;
         }
         button[type="submit"] {
-            background-color: #1F4D8E; /* Stan "aktywny" */
+            background-color: #1F4D8E;
             color: white;
         }
         button[type="submit"]:hover {
-            background-color: #E0F2F1; /* Stan "hover" */
+            background-color: #E0F2F1;
             color: #1F4D8E;
-        }
-        button[type="submit"]:active {
-            background-color: #1F4D8E; /* Stan "aktywny" - można zostawić taki sam jak podstawowy */
-            color: white;
-        }
-        button[type="submit"]:disabled {
-            background-color: #D3D3D3; /* Stan "wyłączony" */
-            color: #666666;
-            cursor: not-allowed;
         }
         button[type="button"] {
             background-color: #F4F0EC;
@@ -102,6 +83,17 @@
         }
         button[type="button"]:hover {
             background-color: #E0F2F1;
+            color: #1F4D8E;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #1F4D8E;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -110,26 +102,23 @@
         <div class="logo">
             <a href="{% url 'tenders:przetargi' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a>
         </div>
-        <h1>Aktualizuj dane zadania</h1>
-        <div class="info">
-            <p><strong>Nazwa:</strong> {{ zadanie.nazwa_zadania }}</p>
-            <p><strong>Kontrahent:</strong> {{ zadanie.kontrahent.nazwa_kontrahenta }}</p>
-            <p><strong>Rodzaj zadania:</strong> {{ zadanie.rodzaj_zadania.nazwa }}</p>
-            <p><strong>Pracownik przypisany:</strong> {{ zadanie.przypisany_pracownik.first_name }} {{ zadanie.przypisany_pracownik.last_name }} ({{ zadanie.przypisany_pracownik.position }})</p>
-            <p><strong>Data wprowadzenia:</strong> {{ zadanie.data_wprowadzenia }}</p>
-            <p><strong>Termin statusu:</strong> {{ zadanie.termin_statusu }}</p>
-            {% if zadanie.status.nazwa == "W trakcie" or zadanie.status.nazwa == "Zakończony" %}
-            <p><strong>Wycena:</strong> {{ zadanie.wycena }}</p>
-            {% endif %}
-        </div>
+        <h1>Przypisz specjalistę do zadania: <br>{{ zadanie.nazwa_zadania }}</h1>
         <form method="post">
             {% csrf_token %}
-            {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                </div>
-            {% endfor %}
+            <div>
+                <label for="id_specjalista">Specjalista</label>
+                {{ form.specjalista }}
+                {% if form.specjalista.errors %}
+                    <div class="errorlist">{{ form.specjalista.errors }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <label for="id_wycena_wykonawcy">Wycena Wykonawcy</label>
+                {{ form.wycena_wykonawcy }}
+                {% if form.wycena_wykonawcy.errors %}
+                    <div class="errorlist">{{ form.wycena_wykonawcy.errors }}</div>
+                {% endif %}
+            </div>
             <div class="actions">
                 <button type="button" onclick="window.history.back();">Anuluj</button>
                 <button type="submit">Zapisz</button>

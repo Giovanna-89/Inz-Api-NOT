@@ -268,8 +268,9 @@
                             <td>{{ zadanie.termin_statusu }}</td>
                             <td>{{ zadanie.przypisany_pracownik.first_name }} {{ zadanie.przypisany_pracownik.last_name }}</td>
                             <td>
-                                <a href="{% url 'tenders:zadanie_edytuj' zadanie.id %}">Aktualizacja</a> |
-                                <a href="{% url 'tenders:zadanie_szczegoly' zadanie.id %}">Szczegóły</a>
+                                <a href="{% url 'tenders:zadanie_edytuj' zadanie.id %}">Aktualizuj zadanie</a> |
+                                <a href="{% url 'tenders:zadanie_szczegoly' zadanie.id %}">Szczegóły</a> |
+                                <a href="{% url 'tenders:zadanie_przypisz' zadanie.id %}">Przypisz specialiste</a> 
                             </td>
                         </tr>
                     {% endfor %}

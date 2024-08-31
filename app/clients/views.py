@@ -61,7 +61,7 @@ class KontrahentCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['wojewodztwa'] = Wojewodztwo.objects.all()
         context['powiaty'] = Powiat.objects.all()  
-        return context
+        return contextS
 
 class KontrahentUpdateView(LoginRequiredMixin, UpdateView):
     model = Kontrahent

@@ -213,8 +213,8 @@
                         <td>{{ kontrahent.powiat.wojewodztwo }}</td>
                         <td>{{ kontrahent.powiat }}</td>
                         <td>
-                            <a href="{% url 'clients:kontrahent_szczegoly' kontrahent.id %}">Szczegóły</a>
-                            <a href="{% url 'clients:kontrahent_edytuj' kontrahent.id %}">Edytuj</a>
+                            <a href="{% url 'clients:kontrahent_szczegoly' kontrahent.id %}">Szczegóły</a> |
+                            <a href="{% url 'clients:kontrahent_edytuj' kontrahent.id %}">Edytuj kontakt</a> 
                         </td>
                     </tr>
                     {% endfor %}

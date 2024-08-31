@@ -89,7 +89,22 @@
             margin-bottom: 20px;
         }
 
-        .add-button {
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-form input[type="text"] {
+            padding: 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex-grow: 1;
+        }
+
+        .search-form button, .add-task-button {
             background-color: #1F4D8E;
             color: #FFFFFF;
             border: none;
@@ -98,11 +113,13 @@
             border-radius: 4px;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
         }
 
-        .add-button:hover {
+        .add-task-button {
+            margin-left: auto;
+        }
+
+        .search-form button:hover, .add-task-button:hover {
             background-color: #E0F2F1;
             color: #1F4D8E;
         }
@@ -132,6 +149,22 @@
         table tr:hover {
             background-color: #ddd;
         }
+
+        th a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        th a:hover {
+            text-decoration: underline;
+        }
+
+        .sort-arrow {
+            font-size: 10px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -157,73 +190,45 @@
         </div>
         <div class="content">
             <h1>Lista Specjalistów</h1>
-            <form method="get">
-                <input type="text" name="search" placeholder="Szukaj..." value="{{ search }}">
+            <form method="get" action="{% url 'specialists:specjalisci' %}" class="search-form">
+                <input type="text" name="search" value="{{ search }}" placeholder="Szukaj...">
                 <button type="submit">Szukaj</button>
-                <a href="{% url 'specialists:specjalista_nowy' %}" class="add-button">Dodaj specjalistę</a>
+                <a href="{% url 'specialists:specjalista_nowy' %}" class="add-task-button">Dodaj nowego specjalistę</a>
             </form>
             <table>
                 <thead>
                     <tr>
-                        <th>
-                            <a href="?sort=imie&direction={% if sort == 'imie' and direction == 'asc' %}desc{% else %}asc{% endif %}">
-                                Imię
-                                {% if sort == 'imie' %}
-                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
-                                {% endif %}
-                            </a>
-                        </th>
-                        <th>
-                            <a href="?sort=nazwisko&direction={% if sort == 'nazwisko' and direction == 'asc' %}desc{% else %}asc{% endif %}">
-                                Nazwisko
-                                {% if sort == 'nazwisko' %}
-                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
-                                {% endif %}
-                            </a>
-                        </th>
-                        <th>
-                            <a href="?sort=branza__nazwa&direction={% if sort == 'branza__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">
-                                Branże
-                                {% if sort == 'branza__nazwa' %}
-                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
-                                {% endif %}
-                            </a>
-                        </th>
-                        <th>
-                            <a href="?sort=obszar_dzialania__powiat__nazwa&direction={% if sort == 'obszar_dzialania__powiat__nazwa' and direction == 'asc' %}desc{% else %}asc{% endif %}">
-                                Obszar działania
-                                {% if sort == 'obszar_dzialania__powiat__nazwa' %}
-                                    <span class="sort-arrow">{% if direction == 'asc' %}&#9650;{% else %}&#9660;{% endif %}</span>
-                                {% endif %}
-                            </a>
-                        </th>
+                        <th><a href="?sort=imie&direction={% if sort == 'imie' and direction == 'asc' %}desc{% else %}asc{% endif %}">Imię</a></th>
+                        <th><a href="?sort=nazwisko&direction={% if sort == 'nazwisko' and direction == 'asc' %}desc{% else %}asc{% endif %}">Nazwisko</a></th>
+                        <th>Branże</th>
+                        <th>Obszar działania</th>
                         <th>Akcje</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for specjalista in specialists %}
-                        <tr>
-                            <td>{{ specjalista.imie }}</td>
-                            <td>{{ specjalista.nazwisko }}</td>
-                            <td>
-                                {% for sb in specjalista.specjalistabranza_set.all %}
-                                    {{ sb.Branza.nazwa }} ({{ sb.rodzaj_uprawnien.nazwa }}){% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for od in specjalista.obszardzialania_set.all %}
-                                    {{ od.powiat.nazwa }} ({{ od.powiat.wojewodztwo.nazwa }}){% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>
+                    {% for specjalista in specjalisci %}
+                    <tr>
+                        <td>{{ specjalista.imie }}</td>
+                        <td>{{ specjalista.nazwisko }}</td>
+                        <td>
+                            {% for sb in specjalista.specjalistabranza_set.all %}
+                                {{ sb.branza.nazwa }} ({{ sb.rodzaj_uprawnien.nazwa }}){% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for od in specjalista.obszardzialania_set.all %}
+                                {{ od.powiat.nazwa }} ({{ od.powiat.wojewodztwo.nazwa }}){% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="actions">
                                 <a href="{% url 'specialists:specjalista_szczegoly' specjalista.id %}">Szczegóły</a> |
-                                <a href="{% url 'specialists:specjalista_edytuj' specjalista.id %}">Aktualizuj kontakt</a> |
-                                <a href="{% url 'specialists:specjalista_obszar_dzialania' specjalista.id %}">Dodaj obszar działania</a> |
-                                <a href="{% url 'specialists:specjalista_branza_uprawnienia' specjalista.id %}">Dodaj branżę</a>
-                            </td>
-                        </tr>
+                                <a href="{% url 'specialists:specjalista_edytuj' specjalista.id %}">Edytuj kontakt</a> |
+                                <a href="{% url 'specialists:specjalista_obszar_dzialania' specjalista.id %}">Dodaj obszar</a> |
+                                <a href="{% url 'specialists:specjalista_branza_uprawnienia' specjalista.id %}">Dodaj branżę</a> 
+                        </td>
+                    </tr>
                     {% endfor %}
-                </tbody>                
+                </tbody>
             </table>
         </div>
     </div>

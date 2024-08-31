@@ -14,7 +14,7 @@ class ZadanieCreateForm(forms.ModelForm):
         model = Zadanie
         fields = [
             'nazwa_zadania', 'kontrahent', 'rodzaj_zadania', 'status', 'data_wprowadzenia', 'termin_statusu',
-            'wartosc_zadania', 'wycena', 'specjalisci'
+            'wartosc_zadania', 'wycena'
         ]
 
     def clean(self):
@@ -28,15 +28,9 @@ class ZadanieCreateForm(forms.ModelForm):
         return cleaned_data
 
 class ZadanieUpdateForm(forms.ModelForm):
-    specjalisci = forms.ModelMultipleChoiceField(
-        queryset=Specjalista.objects.all(),
-        widget=forms.SelectMultiple(attrs={'class': 'select2'}),
-        required=False
-    )
-
     class Meta:
         model = Zadanie
-        fields = ['status', 'termin_statusu', 'wycena', 'specjalisci']
+        fields = ['status', 'termin_statusu', 'wycena']
         widgets = {
             'data_wprowadzenia': forms.DateInput(attrs={'type': 'date', 'readonly': 'readonly'}),
             'termin_statusu': forms.DateInput(attrs={'type': 'date'}),
@@ -55,12 +49,23 @@ class ZadanieUpdateForm(forms.ModelForm):
 
 
 class SpecjalistaZadaniaForm(forms.ModelForm):
-    specjalista = forms.ModelChoiceField(queryset=Specjalista.objects.all(), widget=forms.Select)
-    wycena_wykonawcy = forms.DecimalField(max_digits=10, decimal_places=2, required=False)
-
     class Meta:
         model = SpecjalistaZadania
         fields = ['specjalista', 'wycena_wykonawcy']
+    
+    def __init__(self, *args, **kwargs):
+        # We need to pass the zadanie instance to the form to use it in validation
+        self.zadanie = kwargs.pop('zadanie', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_specjalista(self):
+        specjalista = self.cleaned_data['specjalista']
+
+        # Check if the specialist is already assigned to this task
+        if SpecjalistaZadania.objects.filter(zadanie=self.zadanie, specjalista=specjalista).exists():
+            raise forms.ValidationError("Ten specjalista jest już przypisany do tego zadania.")
+        
+        return specjalista
 
 class RodzajZadaniaCreateForm(forms.ModelForm):
     class Meta:

@@ -124,7 +124,7 @@ class RodzajUprawnien(models.Model):
 
 class SpecjalistaBranza(models.Model):
     specjalista = models.ForeignKey(Specjalista, on_delete=models.CASCADE)
-    Branza = models.ForeignKey(Branza, on_delete=models.CASCADE)
+    branza = models.ForeignKey(Branza, on_delete=models.CASCADE)
     rodzaj_uprawnien = models.ForeignKey('RodzajUprawnien', on_delete=models.CASCADE)
 
 class ObszarDzialania(models.Model):

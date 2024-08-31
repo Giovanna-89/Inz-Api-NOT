@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, FormView
 from core.models import Zadanie, SpecjalistaZadania, RodzajZadania, Specjalista
-from .forms import ZadanieCreateForm, ZadanieUpdateForm, SpecjalistaZadaniaForm, RodzajZadaniaCreateForm
+from .forms import ZadanieCreateForm, ZadanieUpdateForm, SpecjalistaZadaniaForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
@@ -21,7 +21,7 @@ class PrzetargiListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(
                 Q(nazwa_zadania__icontains=search) |
                 Q(kontrahent__nazwa_kontrahenta__icontains=search) |
-                Q(kontrahent__typ_kontrahenta__icontains=search) |
+                Q(kontrahent__typ_kontrahenta__nazwa__icontains=search) |  # Dodano pole `nazwa`
                 Q(rodzaj_zadania__nazwa__icontains=search) |
                 Q(status__nazwa__icontains=search) |
                 Q(przypisany_pracownik__first_name__icontains=search) |
@@ -29,10 +29,10 @@ class PrzetargiListView(LoginRequiredMixin, ListView):
             )
 
         valid_sort_options = [
-            'nazwa_zadania', 'termin_statusu', 'kontrahent__nazwa_kontrahenta',
-            'kontrahent__typ_kontrahenta', 'rodzaj_zadania__nazwa',
-            'status__nazwa', 'przypisany_pracownik__first_name',
-            'przypisany_pracownik__last_name'
+        'nazwa_zadania', 'termin_statusu', 'kontrahent__nazwa_kontrahenta',
+        'kontrahent__typ_kontrahenta__nazwa', 'rodzaj_zadania__nazwa',
+        'status__nazwa', 'przypisany_pracownik__first_name',
+        'przypisany_pracownik__last_name'
         ]
         if sort in valid_sort_options:
             if direction == 'desc':
@@ -110,9 +110,10 @@ class ZadanieDetailView(LoginRequiredMixin, DetailView):
     template_name = 'tenders/zadanie_detail.html'
     context_object_name = 'zadanie'
 
-class ZadanieAssignView(LoginRequiredMixin, FormView):
+class SpecjalistaZadanieView(LoginRequiredMixin, CreateView):
+    model = SpecjalistaZadania
     form_class = SpecjalistaZadaniaForm
-    template_name = 'tenders/zadanie_assign_form.html'
+    template_name = 'tenders/specjalista_zadania.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,16 +122,16 @@ class ZadanieAssignView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         zadanie = get_object_or_404(Zadanie, pk=self.kwargs['pk'])
-        specjalista_zadania, created = SpecjalistaZadania.objects.get_or_create(
-            zadanie=zadanie,
-            specjalista=form.cleaned_data['specjalista']
-        )
-        specjalista_zadania.wycena_wykonawcy = form.cleaned_data['wycena_wykonawcy']
-        specjalista_zadania.save()
-        return redirect('tenders:zadanie_szczegoly', pk=zadanie.pk)
+        specjalista = form.cleaned_data['specjalista']
 
-class RodzajZadaniaCreateView(CreateView):
-    model = RodzajZadania
-    form_class = RodzajZadaniaCreateForm
-    template_name = 'tenders/rodzaj_zadania_form.html'
-    success_url = reverse_lazy('tenders:przetargi')
+        # Sprawdzenie, czy specjalista jest już przypisany do zadania
+        if SpecjalistaZadania.objects.filter(zadanie=zadanie, specjalista=specjalista).exists():
+            messages.error(self.request, "Ten specjalista jest już przypisany do tego zadania.")
+            return self.form_invalid(form)
+
+        form.instance.zadanie = zadanie
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('tenders:zadanie_szczegoly', kwargs={'pk': self.kwargs['pk']})
+

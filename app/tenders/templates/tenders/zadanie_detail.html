@@ -36,51 +36,54 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        .zadanie-details {
-            background-color: #F8F9FA;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
+        h2 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1F4D8E;
+            margin-top: 20px;
         }
-        .zadanie-details p {
+        p {
             margin: 5px 0;
         }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        ul li {
+            margin-bottom: 5px;
+        }
         a {
-            display: block;
-            text-align: center;
+            display: inline-block;
             margin-top: 20px;
             color: #1F4D8E;
             text-decoration: none;
+            font-weight: bold;
         }
         a:hover {
             text-decoration: underline;
         }
-        button {
-            padding: 8px 16px;
-            font-size: 12px;
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button, a.button {
+            padding: 12px 24px;
+            font-size: 16px;
             font-weight: bold;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        button[type="submit"] {
+        button[type="button"], a.button {
             background-color: #1F4D8E;
             color: white;
         }
-        button[type="submit"]:hover {
+        button[type="button"]:hover, a.button:hover {
             background-color: #E0F2F1;
             color: #1F4D8E;
-        }
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #1F4D8E;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -90,28 +93,30 @@
             <a href="{% url 'tenders:przetargi' %}"><img src="{% static 'images/logo.png' %}" alt="Logo"></a>
         </div>
         <h1>Szczegóły Zadania</h1>
-        <div class="zadanie-details">
-            <p><strong>Nazwa zadania:</strong> {{ zadanie.nazwa_zadania }}</p>
-            <p><strong>Kontrahent:</strong> {{ zadanie.kontrahent.nazwa_kontrahenta }}</p>
-            <p><strong>Rodzaj zadania:</strong> {{ zadanie.rodzaj_zadania.nazwa }}</p>
-            <p><strong>Status:</strong> {{ zadanie.status.nazwa }}</p>
-            <p><strong>Data wprowadzenia:</strong> {{ zadanie.data_wprowadzenia }}</p>
-            <p><strong>Termin statusu:</strong> {{ zadanie.termin_statusu }}</p>
-            <p><strong>Wartość zadania:</strong> {% if zadanie.wartosc_zadania > 0 %} {{ zadanie.wartosc_zadania }} {% else %} Brak danych {% endif %}</p>
-            <p><strong>Wycena:</strong> {% if zadanie.wycena > 0 %} {{ zadanie.wycena }} {% else %} Brak danych {% endif %}</p>
-            <p><strong>Przypisany pracownik:</strong> {{ zadanie.przypisany_pracownik.first_name }} {{ zadanie.przypisany_pracownik.last_name }} ({{ zadanie.przypisany_pracownik.position }})</p>
+        <p><strong>Nazwa zadania:</strong> {{ zadanie.nazwa_zadania }}</p>
+        <p><strong>Kontrahent:</strong> {{ zadanie.kontrahent.nazwa_kontrahenta }}</p>
+        <p><strong>Rodzaj zadania:</strong> {{ zadanie.rodzaj_zadania.nazwa }}</p>
+        <p><strong>Status:</strong> {{ zadanie.status.nazwa }}</p>
+        <p><strong>Data wprowadzenia:</strong> {{ zadanie.data_wprowadzenia }}</p>
+        <p><strong>Termin statusu:</strong> {{ zadanie.termin_statusu }}</p>
+        <p><strong>Wartość zadania:</strong> {% if zadanie.wartosc_zadania > 0 %} {{ zadanie.wartosc_zadania }} {% else %} Brak danych {% endif %}</p>
+        <p><strong>Wycena:</strong> {% if zadanie.wycena > 0 %} {{ zadanie.wycena }} {% else %} Brak danych {% endif %}</p>
+        <p><strong>Przypisany pracownik:</strong> {{ zadanie.przypisany_pracownik.first_name }} {{ zadanie.przypisany_pracownik.last_name }} ({{ zadanie.przypisany_pracownik.position }})</p>
 
-            {% if zadanie.status.nazwa == "W trakcie" %}
-                <h2>Przypisani specjaliści</h2>
-                <ul>
-                    {% for specjalista_zadanie in zadanie.specjalistazadania_set.all %}
-                        <li>{{ specjalista_zadanie.specjalista }} - Wycena: {{ specjalista_zadanie.wycena_wykonawcy }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+        {% if zadanie.specjalistazadania_set.exists %}
+            <h2>Przypisani specjaliści</h2>
+            <ul>
+                {% for specjalista_zadanie in zadanie.specjalistazadania_set.all %}
+                    <li>{{ specjalista_zadanie.specjalista }} - Wycena: {{ specjalista_zadanie.wycena_wykonawcy }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Brak przypisanych specjalistów.</p>
+        {% endif %}
+
         <div class="actions">
-            <button type="submit" onclick="window.history.back();">Powrót</button>
+            <a href="{% url 'tenders:przetargi' %}" class="button">Powrót do listy</a>
+            <a href="{% url 'tenders:zadanie_edytuj' zadanie.id %}" class="button">Edytuj zadanie</a>
         </div>
     </div>
 </body>
