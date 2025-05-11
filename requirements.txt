@@ -3,3 +3,4 @@ black==24.3.0
 pre-commit==3.7.0
 psycopg2-binary>=2.9.3,<3.0
 reportlab==3.5.68
+django-environ==0.11.2
