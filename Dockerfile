@@ -1,42 +1,36 @@
 FROM python:3.10-alpine3.19
 
-
 LABEL maintainer="giovanna89"
 
+# Avoid buffering stdout/stderr
+ENV PYTHONUNBUFFERED=1
 
-ENV PYTHONBUFFERED 1
+# Install dependencies and tools
+RUN apk add --no-cache postgresql-client \
+    && apk add --no-cache --virtual .build-deps \
+        build-base postgresql-dev musl-dev
 
+# Create working directory
+WORKDIR /app
 
+# Copy files
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./app /app
 
-
-WORKDIR /app
-
-
-RUN apk add --update --no-cache postgresql-client && \
-    apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \
-    python -m venv /py && \
-    /py/bin/pip install --upgrade pip && \
-    /py/bin/pip install -r /tmp/requirements.txt && \
-    apk del .tmp-build-deps && \
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -r /tmp/requirements.txt && \
+    apk del .build-deps && \
     rm -rf /tmp
 
-
+# Create non-root user
 RUN adduser --disabled-password --no-create-home django-user
 
+# Set PATH
+ENV PATH="/home/django-user/.local/bin:$PATH"
 
-ENV PATH="/py/bin:$PATH"
-
+RUN mkdir -p /app/logs && chown -R django-user /app/logs
 
 USER django-user
 
-
 EXPOSE 8000
-
-
-CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000"]
-
-
-
